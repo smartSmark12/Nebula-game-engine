@@ -75,6 +75,16 @@ class SpriteHandlerJSON:
     
     def real_scale_sprite(self, spriteToRescale:pg.Surface, size:tuple|list) -> pg.Surface:
         return self.rescale_sprite(spriteToRescale, (self.to_scalex(size[0]), self.to_scaley(size[1])))
+    
+    def real_scale_sprites(self, spritesToRescale:dict[str, pg.Surface], sizes:dict[str, [int, int]]):
+        rescaled_sprites = {}
+
+        for i in spritesToRescale:
+            sprite = spritesToRescale[i]
+
+            rescaled_sprites[i] = self.real_scale_sprite(sprite, sizes[i])
+
+        return rescaled_sprites
 
     def get_scale(self):
         self.app.screen_scale = (WIDTH/1920, HEIGHT/1080)
@@ -87,6 +97,7 @@ class SpriteHandlerJSON:
         if round_num: return round(number * self.app.screen_scale[1])
         else: return number * self.app.screen_scale[1]
 
+# the old version
 class SpriteHandler:
     def __init__(self, appInstance):
         self.app = appInstance
