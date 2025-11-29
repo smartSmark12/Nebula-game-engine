@@ -23,8 +23,12 @@ class LogHandler:
                 if self.current_log[i] == self.current_log[i+1]:
                     curr_item_count += 1
             except:
-                summed_log += f"{self.current_log[i]} ({curr_item_count + 1}x)\n"
-                curr_item_count = 0
+                if curr_item_count == 0:
+                    summed_log += f"{self.current_log[i]}"
+                    curr_item_count = 0 # safety
+                else:
+                    summed_log += f"{self.current_log[i]} ({curr_item_count + 1}x)\n"
+                    curr_item_count = 0
 
         return summed_log
 

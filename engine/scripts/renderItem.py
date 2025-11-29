@@ -60,19 +60,19 @@ class RenderItem:
                 if "width" not in self.metadata: self.metadata["width"] = 0
             case "text":
                 if "font" not in self.metadata: self.metadata["font"] = pg.font.SysFont("Arial", 40)
-                if type(self.metadata["font"]) != pg.font.SysFont or type(self.metadata["font"]) != pg.font.Font:
-                    self.metadata["stop"] = False
+                if type(self.metadata["font"]) != pg.font.Font: #type(self.metadata["font"]) != pg.font.SysFont ## not a class?
+                    stop = False
                     try: 
                         self.metadata["font"] = pg.font.SysFont(self.metadata["font"][0], self.metadata["font"][1])
-                        self.metadata["stop"] = True
+                        stop = True
                     except: 
                         self.metadata["font"] = pg.font.SysFont("Arial", 40)
-                        self.metadata["stop"] = True
-                    if not self.metadata["stop"]:
+                        stop = True
+                    if not stop:
                         try:
                             self.metadata["font"] = pg.font.Font(self.metadata["font"][0], self.metadata["font"][1])
                         except: self.metadata["font"] = pg.font.SysFont("Arial", 40)
-                if "text" not in self.metadata: self.metadata["text"] = "default_text"
+                if "text" not in self.metadata: self.metadata["text"] = "you forgor to set the text :>"
                 if "antialias" not in self.metadata: self.metadata["antialias"] = False
                 if "color" not in self.metadata: self.metadata["color"] = white
                 if "bgcolor" not in self.metadata: self.metadata["bgcolor"] = black

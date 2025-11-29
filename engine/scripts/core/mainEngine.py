@@ -1,4 +1,4 @@
-# Nebula Game Framework prototype v0.0.4 (10. 6. 2025) [support for multithreading and multithreaded rendering]
+# Nebula Game Framework prototype v0.0.4s (29. 11. 2025) [so much shis istg + s for scenes]
 # NGFp designed by VaclavK - not for commercial use - only experiments and silly stuff >:)
 
 ## DO NOT USE mainEngine.py AS AN ENTRY POINT
@@ -34,8 +34,10 @@ from scripts.tileScripts.VTIleTerrainGen import VTileTerrainGenerator # used to 
 from scripts.core.spriteHandler import SpriteHandler, SpriteHandlerJSON # local library used to handle sprite importing and rescaling
 from scripts.core.animationHandler import AnimationHandler # local library used to create animations from imported sprites
 from scripts.core.keyHandler import KeyHandler # local library used to handle key input changes
-from scripts.core.openglHandler import OGLHandler # local library for
-from scripts.core.settings import GAME_NAME
+from scripts.core.openglHandler import OGLHandler # local library for shader support (experimental!)
+from scripts.core.scenes.scene_handler import SceneHandler
+from scripts.core.scenes.scene import Scene
+from scripts.core.settings import GAME_NAME, DEFAULT_SCENE_NAME
 """ from game.game import MainGame """
 
 ## example import
@@ -115,6 +117,10 @@ class MainEngine:
         self.keyhandler = KeyHandler(self) # change keybinds in keyhandler.py
         self.keyhandler.initial_setup()
 
+        # scene handler setup
+        self.scene_handler = SceneHandler(self)
+        self.scene_handler.addScene(Scene(self, "main"))
+
         """ self.create_examples() """
 
         # logger setup
@@ -125,7 +131,8 @@ class MainEngine:
 
     # write your game on_init here
     def game_on_init(self):
-        pass # your code here
+        # your game code here
+        pass
 
     def create_runtime_logger(self):
         self.logger = LogHandler()
@@ -311,6 +318,10 @@ class MainEngine:
 
         # do main game logic
         self.do_logic()
+
+        # update and render active scene
+        self.scene_handler.updateScene()
+        self.scene_handler.renderScene()
 
         # post frame stuff
         self.render_fps()
