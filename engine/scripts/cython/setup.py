@@ -1,16 +1,20 @@
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 
-import sysconfig
+# this is the file name you have to change to your own
+NAME = "test"
 
-path = "engine/scripts/cython/"
+# you can change this to your own export path of the final pyd / so file
+export_path = "engine.scripts.cython.build."
 
-from setuptools import setup
+# this you probably shouldn't touch
+source_path = "engine/scripts/cython/"
+file_extension = ".pyx"
 
 ext_modules = [
     Extension(
-        "engine.scripts.cython.build.test",
-        [f"{path}test.pyx"]
+        f"{export_path}{NAME}",
+        [f"{source_path}{NAME}{file_extension}"]
     )
 ]
 
@@ -19,11 +23,3 @@ setup(
 )
 
 # py -3.13t engine/scripts/cython/setup.py build_ext --inplace
-
-""" setup(
-    name="arak.test",
-    ext_modules=cythonize(
-        f"{path}test.pyx",
-        compiler_directives={"language_level":"3"}
-    )
-) """
