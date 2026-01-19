@@ -37,7 +37,8 @@ from scripts.core.keyHandler import KeyHandler # local library used to handle ke
 from scripts.core.openglHandler import OGLHandler # local library for shader support (experimental!)
 from scripts.core.scenes.scene_handler import SceneHandler
 from scripts.core.scenes.scene import Scene
-from scripts.core.settings import GAME_NAME, DEFAULT_SCENE_NAME
+from scripts.raycast.raycastHandler import Raycaster
+
 """ from game.game import MainGame """
 
 ## example import
@@ -124,7 +125,10 @@ class MainEngine:
         self.scene_handler = SceneHandler(self)
         self.scene_handler.addScene(Scene(self, "main"))
 
-        """ self.create_examples() """
+        # raycaster setup
+        self.raycaster = Raycaster(self)
+
+        self.create_examples()
 
         # logger setup
         self.create_runtime_logger()
@@ -172,7 +176,7 @@ class MainEngine:
         example_anim = AnimatedTexture(convert_to_flatpane({"anim0":self.sprites["anim0"], "anim1":self.sprites["anim1"], "anim2":self.sprites["anim2"]}), 1) """
 
     	# vtilemap examples
-        self.color_examples = [lime, green, gray, yellow, blue]
+        #self.color_examples = [lime, green, gray, yellow, blue]
 
             # vtile diamond map
         """ self.vtilemap_example = VTileGenerator.generateMap((38*4, 22*4), [0, 1, 2, 3, 4], "square", 20) """ # 38, 22; vk, square
@@ -184,7 +188,7 @@ class MainEngine:
         self.vtile_timer = 0 """
 
             # vtile terrain map full
-        self.vtilemap_example = VTileTerrainGenerator.generateTerrainMap((38*5, 22*5), None, 4.5, 1) # stability = 2
+        #self.vtilemap_example = VTileTerrainGenerator.generateTerrainMap((38*5, 22*5), None, 4.5, 1) # stability = 2
 
             # vtile terrain map generable
         """ self.mapSize = (38*6, 22*6)
@@ -192,11 +196,18 @@ class MainEngine:
         self.vtilemap_example = VTileTerrainGenerator.placeStartingPoint(self.vtilemap_example, VTileTerrainGenerator.loadBaseBiomes()[0])
         self.vtile_timer = 0 """
 
-        self.tile_width = WIDTH/len(self.vtilemap_example[0])
-        self.tile_height = HEIGHT/len(self.vtilemap_example)
+        #self.tile_width = WIDTH/len(self.vtilemap_example[0])
+        #self.tile_height = HEIGHT/len(self.vtilemap_example)
 
-        self.draw_screen = pg.Surface((WIDTH, HEIGHT))
-        self.drawn = False
+        #self.draw_screen = pg.Surface((WIDTH, HEIGHT))
+        #self.drawn = False
+
+        """ # raycaster example
+        self.raycaster.create_walls()
+        self.raycaster.recalculate_walls()
+        self.raycaster.add_source((100, 100), 180)
+        self.scene_handler.getScene("main").update = self.raycaster.update
+        self.scene_handler.getScene("main").render = self.raycaster.render """
 
     def render_examples(self):
         """ fp = flatpane("img", self.sprites, sprite="atmo", position=(100, 100))
@@ -250,6 +261,9 @@ class MainEngine:
                         pg.draw.rect(self.draw_screen, self.color_examples[draw_buffer[y][x]], pg.Rect(x*(self.tile_width), y*self.tile_height, self.tile_width, self.tile_height))
         except:pass """
         """ self.draw("sprite", 3, {"rect":(0, 0, WIDTH, HEIGHT), "sprite":self.draw_screen}) """
+
+        """ # update raycaster pos
+        self.raycaster.sources[0].pos = self.mouse_info[0] """
 
     def render_fps(self):
         

@@ -1,6 +1,9 @@
-tests/
+/tests/
+/engine/scripts/tests/
 /build/
 .vscode/*
 .vs/*
 **/__pycache__/**
+
 /engine/scripts/cython/*.c
+/engine/scripts/raycast/*.c
