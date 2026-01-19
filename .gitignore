@@ -1,4 +1,6 @@
 tests/
+/build/
 .vscode/*
 .vs/*
 **/__pycache__/**
+/engine/scripts/cython/*.c

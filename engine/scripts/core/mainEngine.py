@@ -1,4 +1,4 @@
-# Nebula Game Framework prototype v0.0.4s (29. 11. 2025) [so much shis istg + s for scenes]
+# Nebula Game Framework prototype v0.0.4c (19. 1. 2026) [cython support with py 3.13t - freethreaded]
 # NGFp designed by VaclavK - not for commercial use - only experiments and silly stuff >:)
 
 ## DO NOT USE mainEngine.py AS AN ENTRY POINT
@@ -42,6 +42,9 @@ from scripts.core.settings import GAME_NAME, DEFAULT_SCENE_NAME
 
 ## example import
 from scripts.tileScripts.baseBiomeWeights import baseBiomeWeights
+
+## example cython import
+from scripts.cython.build.test import test_function # type: ignore # lynter doesn't like "empty" folders, but it works fine
 
 # something like from engine.scripts import * using https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwi46Of9hr-GAxVQhf0HHXmICu4QFnoECCYQAQ&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F1057431%2Fhow-to-load-all-modules-in-a-folder&usg=AOvVaw3vlcgC_pzadT7glu9LmH2n&cshid=1717404751563860&opi=89978449
 # need to make a crash handler (official python function??)
@@ -337,6 +340,8 @@ class MainEngine:
         self.animations_to_render.append("example_anim")
  
     def run(self):
+        test_function("test! ", 10)
+
         while self.is_running:
             self.handle_events()
             self.update()
