@@ -147,6 +147,7 @@ class MainEngine:
     # write your game on_init here
     def game_on_init(self):
         self.reactionService.add_provider("frameUpdate", ReactionProvider())
+        self.reactionService.add_provider("sceneChange", ReactionProvider())
 
         #self.reactionService.get_provider("frameUpdate").add_listener(ReactionListener(partial(print, "frame updated!"))) ## move to documentation examples
 
@@ -229,19 +230,19 @@ class MainEngine:
 
             self.alarms[alarm].checkTimeout(self.dt)
 
-    def pause_alarm(self, alarmId:str):
+    def pause_alarm(self, alarmId:int):
         self.alarms[alarmId].pauseAlarm()
 
-    def unpause_alarm(self, alarmId:str):
+    def unpause_alarm(self, alarmId:int):
         self.alarms[alarmId].unpauseAlarm()
 
-    def add_alarm(self, alarmName:str, alarmTime:int|float, timeoutFunction, repeatAlarm:bool) -> int:
+    def add_alarm(self, alarmName:str, alarmTime:int|float, timeoutFunction, repeatAlarm:bool):
         alarm = Alarm(alarmName, alarmTime, timeoutFunction, repeatAlarm)
         self.alarms[id(alarm)] = alarm
 
         return id(alarm)
 
-    def remove_alarm(self, alarmId:str|int):
+    def remove_alarm(self, alarmId:int):
         self.alarms[alarmId].removeAlarm()
 
     def render_examples(self):

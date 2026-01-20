@@ -37,6 +37,8 @@ class SceneHandler:
         if self.getActiveSceneName() != None:
             self.getActiveScene().update()
 
+            self.app.reactionService.trigger_provider("sceneChange")
+
     def renderScene(self):
         if self.getActiveSceneName() != None:
             self.getActiveScene().render()
