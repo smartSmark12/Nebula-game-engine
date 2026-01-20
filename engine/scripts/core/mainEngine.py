@@ -299,6 +299,18 @@ class MainEngine:
     def load_sounds(self):
         pass
 
+    def get_keybind_pressed(self, keybind:str):
+        return self.keybinds_pressed[keybind]
+    
+    def get_keybind_changed(self, keybind:str):
+        return self.keybinds_changed[keybind]
+    
+    def get_keybind_just_pressed(self, keybind:str):
+        return self.get_keybind_pressed(keybind) and self.get_keybind_changed(keybind)
+
+    def get_keybind_keycode_name(self, keybind:str):
+        return self.keyhandler.keybind_keycode_names[keybind]
+
     def render(self):
         if MULTITHREADED_RENDERING:
             # set caption
