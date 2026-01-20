@@ -11,7 +11,7 @@ sys.path.append('../engine')
 import csv # used for saving and loading data into and from .csv files
 import os # used for handling file access and system calls
 import math # math
-import moderngl as mgl
+import moderngl as mgl # required for shader support
 from array import array
 from threading import Lock
 import _thread
@@ -27,7 +27,7 @@ from vuilib.vui_button import button
 from vuilib.vui_interactive import InteractiveVUI
 from scripts.vanimlib.val_animatedTexture import AnimatedTexture # local library for easier work with image sequences and video frames
 from scripts.runtimeLogHandler import LogHandler # local library for terminal and log handling
-from scripts.core.fileManager import FileManager
+from scripts.core.fileManager import FileManager # an older and not so great .ntd file saving and loading
 from scripts.mplib.multiplayerClient import mpClient # client+network from multiplayerlib for multiplayer data handling
 from scripts.tileScripts.VTileGen import VTileGenerator # useful for generating custom size maps with set content using VR (Vaclav-Random XD) distribution
 from scripts.tileScripts.VTIleTerrainGen import VTileTerrainGenerator # used to generate terrain based on weights
@@ -35,17 +35,18 @@ from scripts.core.spriteHandler import SpriteHandler, SpriteHandlerJSON # local 
 from scripts.core.animationHandler import AnimationHandler # local library used to create animations from imported sprites
 from scripts.core.keyHandler import KeyHandler # local library used to handle key input changes
 from scripts.core.openglHandler import OGLHandler # local library for shader support (experimental!)
-from scripts.core.scenes.scene_handler import SceneHandler
-from scripts.core.scenes.scene import Scene
-from scripts.raycast.raycastHandler import Raycaster
+from scripts.core.scenes.scene_handler import SceneHandler # local library for managing game scenes
+from scripts.core.scenes.scene import Scene # scene with basic update and render functions
+from scripts.alarm import Alarm # local library for frame asynchronous periodical or not waiting
+from scripts.raycast.raycastHandler import Raycaster # local library for raycasted lighting
 
 """ from game.game import MainGame """
 
 ## example import
 from scripts.tileScripts.baseBiomeWeights import baseBiomeWeights
 
-## example cython import
-from scripts.cython.build.test import test_function # type: ignore # lynter doesn't like "empty" folders, but it works fine
+## example cython import # lynter doesn't like "empty" folders, but it works fine
+from scripts.cython.build.test import test_function # type: ignore
 
 # something like from engine.scripts import * using https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwi46Of9hr-GAxVQhf0HHXmICu4QFnoECCYQAQ&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F1057431%2Fhow-to-load-all-modules-in-a-folder&usg=AOvVaw3vlcgC_pzadT7glu9LmH2n&cshid=1717404751563860&opi=89978449
 # need to make a crash handler (official python function??)
@@ -209,6 +210,29 @@ class MainEngine:
         self.scene_handler.getScene("main").update = self.raycaster.update
         self.scene_handler.getScene("main").render = self.raycaster.render """
 
+    def update_alarms(self):
+        for alarm in self.alarms:
+
+            if self.alarms[alarm].getRemoveSchedule():
+                del self.alarms[alarm] # idk
+
+            self.alarms[alarm].checkTimeout(self.dt)
+
+    def pause_alarm(self, alarmId:str):
+        self.alarms[alarmId].pauseAlarm()
+
+    def unpause_alarm(self, alarmId:str):
+        self.alarms[alarmId].unpauseAlarm()
+
+    def add_alarm(self, alarmName:str, alarmTime:int|float, timeoutFunction, repeatAlarm:bool) -> int:
+        alarm = Alarm(alarmName, alarmTime, timeoutFunction, repeatAlarm)
+        self.alarms[id(alarm)] = alarm
+
+        return id(alarm)
+
+    def remove_alarm(self, alarmId:str|int):
+        self.alarms[alarmId].removeAlarm()
+
     def render_examples(self):
         """ fp = flatpane("img", self.sprites, sprite="atmo", position=(100, 100))
         self.to_render.append(RenderItem("sprite", 5, {"sprite":fp.sprite, "rect":(100, 100, 100, 100)})) """
@@ -324,10 +348,6 @@ class MainEngine:
         mouse_pressed = pg.mouse.get_pressed()
 
         mouse_changed = mouse_pressed[0] != self.mouse_last
-        """ if mouse_pressed[0] == self.mouse_last: # could do it for every mouse button and put in in a list as any
-            mouse_changed = False
-        else:
-            mouse_changed = True """
 
         self.mouse_last = mouse_pressed[0]
 
@@ -354,8 +374,6 @@ class MainEngine:
         self.animations_to_render.append("example_anim")
  
     def run(self):
-        test_function("test! ", 10)
-
         while self.is_running:
             self.handle_events()
             self.update()
