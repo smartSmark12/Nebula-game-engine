@@ -15,6 +15,7 @@ import moderngl as mgl # required for shader support
 from array import array
 from threading import Lock
 import _thread
+from functools import partial
 from scripts.core.render import MainGameRender, ThreadedGameRenderer # local renderer library
 from scripts.renderItem import RenderItem # local class library serving as the base for every object rendering to the screen
 from scripts.functions import * # local universal functions library
@@ -38,6 +39,9 @@ from scripts.core.openglHandler import OGLHandler # local library for shader sup
 from scripts.core.scenes.scene_handler import SceneHandler # local library for managing game scenes
 from scripts.core.scenes.scene import Scene # scene with basic update and render functions
 from scripts.alarm import Alarm # local library for frame asynchronous periodical or not waiting
+from scripts.core.reactions.reactionService import ReactionService # local library for Provider-Listener Reactions
+from scripts.core.reactions.reactionProvider import ReactionProvider
+from scripts.core.reactions.reactionListener import ReactionListener
 from scripts.raycast.raycastHandler import Raycaster # local library for raycasted lighting
 
 """ from game.game import MainGame """
@@ -126,6 +130,9 @@ class MainEngine:
         self.scene_handler = SceneHandler(self)
         self.scene_handler.addScene(Scene(self, "main"))
 
+        # reaction service setup
+        self.reactionService = ReactionService(self)
+
         # raycaster setup
         self.raycaster = Raycaster(self)
 
@@ -139,6 +146,10 @@ class MainEngine:
 
     # write your game on_init here
     def game_on_init(self):
+        self.reactionService.add_provider("frameUpdate", ReactionProvider())
+
+        #self.reactionService.get_provider("frameUpdate").add_listener(ReactionListener(partial(print, "frame updated!"))) ## move to documentation examples
+
         # your game code here
         pass
 
@@ -364,6 +375,9 @@ class MainEngine:
         self.mouse_last = mouse_pressed[0]
 
         self.mouse_info = (pg.mouse.get_pos(), mouse_pressed, mouse_changed)
+
+        # fire the frameUpdate Reaction
+        self.reactionService.trigger_provider("frameUpdate")
 
         # do main game logic
         self.do_logic()
