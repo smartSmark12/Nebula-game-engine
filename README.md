@@ -19,4 +19,4 @@ Here is a list of (mostly my own) games built with Nebula:
 - Snowshooter (not public yet)
 - VUI editor (not public yet)
 # Documentation
-As of right now, the only help you'll get is either by DMing me or in [help.txt](/engine/help.txt)
+As of right now, the only help you'll get is either by DMing me or in [help.txt](/engine/help.txt) (A better, newer version is currently in the works and can be found [here](/engine/help.md))
