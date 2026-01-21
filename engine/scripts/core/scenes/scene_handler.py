@@ -30,14 +30,13 @@ class SceneHandler:
     def setActiveScene(self, sceneName:str|None):
         if sceneName in self.scenes or sceneName == None:
             self.activeScene = sceneName
+            self.app.reactionService.trigger_provider("sceneChange")
         else:
             print(f"{__name__}: Scene {sceneName} not found in scenes - no new active scene set")
 
     def updateScene(self):
         if self.getActiveSceneName() != None:
             self.getActiveScene().update()
-
-            self.app.reactionService.trigger_provider("sceneChange")
 
     def renderScene(self):
         if self.getActiveSceneName() != None:

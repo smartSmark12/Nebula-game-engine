@@ -17,15 +17,15 @@ class JsonLoader:
         try:
             with open(filepath, "r") as file:
                 return json.load(file)
-        except:
-            print(f"JsonLoader:readError: couldn't read data from file {filepath}")
+        except Exception as e:
+            print(f"JsonLoader:readError: couldn't read data from file {filepath} ({e})")
         
     @staticmethod
     def write_to_file(filepath:str, data:dict) -> None:
-        """ try: """
-        if JsonLoader.create_new_file(filepath):
-            print(f"JsonLoader: created new file at {filepath}")
-        with open(filepath, "w") as file:
-            file.write(json.dumps(data, indent=4))
-        """ except:
-            print(f"JsonLoader:writeError: couldn't write data:\n{data}\nto file:\n{filepath}") """
+        try:
+            if JsonLoader.create_new_file(filepath):
+                print(f"JsonLoader: created new file at {filepath}")
+            with open(filepath, "w") as file:
+                file.write(json.dumps(data, indent=4))
+        except Exception as e:
+            print(f"JsonLoader:writeError: couldn't write data:\n{data}\nto file:\n{filepath} ({e})")

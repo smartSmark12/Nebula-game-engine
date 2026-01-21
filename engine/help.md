@@ -85,8 +85,23 @@ For image/animation loading see [Sprites](#sprites) or [Animations](#animations)
 ### CSV files
 
 ### JSON files
+Nebula provides an easy way of reading and writing json files using the [json loader](/engine/scripts/json_loader.py)  
+
+Json functions available in [mainEngine.py](/engine/scripts/core/mainEngine.py):
+- **write_to_file(** filepath:str, data:dict **)** - creates a file at _filepath_ if it doesn't exist already and writes the entire json-formatted _data_ dictionary into it. Note that this function **will overwrite** any existing data present in the _filepath_ file without a warning.
+- **load_from_file(** filepath:str **)** - returns a dictionary with the json data read from _filepath_.
+- **create_new_file(** filepath:str **)** - creates a new empty file at _filepath_; returns True when successful and False if a file already exists at _filepath_.
 
 ## Scenes
+Nebula's [scene handler](/engine/scripts/core/scenes/scene_handler.py) provides a simple way to split your game into multiple [scenes](/engine/scripts/core/scenes/scene.py). Every scene has a built in _update_ and _render_ functions, which are called every frame by the engine at appropriate times when the scene is active, but custom functions and objects can be bound to scenes as well.  
+
+Scene management functions available for [scene handler](/engine/scripts/core/scenes/scene_handler.py) (self.scene_handler in [mainEngine.py](/engine/scripts/core/mainEngine.py)):
+
+- **addScene(** sceneToAdd:Scene **)** - registers the scene _sceneToAdd_ in the scene management service. Now it can be accessed by other functions of the scene manager. (_note_: scenes _can_ exist by themselves, but you're advised not to do so)
+- **setActiveScene(** sceneName:str | None **)** - makes a _registered_ scene with the name _sceneName_ active, meaning its _update_ and _render_ functions will get called every frame. Setting the active scene to _None_ will make all scenes inactive, meaning only engine functions (e.g.  _update_ and _do_logic_) will be executed. Note activating a different scene **will not pause any Alarms** or change any non-scene-related behavior by default.
+- **getActiveScene()** - returns the currently active Scene object. Useful for changing scene variables.
+- **getActiveSceneName()** - returns the name of the currently active scene.
+- **getScene(** sceneName:str **)** - returns a _registered_ scene of the name _sceneName_. Useful for changing scene variables.
 
 ## VUI
 
