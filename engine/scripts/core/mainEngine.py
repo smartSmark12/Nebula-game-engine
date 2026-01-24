@@ -323,6 +323,12 @@ class MainEngine:
     def get_keybind_keycode_name(self, keybind:str):
         return self.keyhandler.keybind_keycode_names[keybind]
 
+    def register_keybind(self, keybind_name:str, keycode:int):
+        self.keyhandler.register_keybind(keybind_name, keycode)
+
+    def unregister_keybind(self, keybind_name:str, keycode:int):
+        self.keyhandler.unregister_keybind(keybind_name, keycode)
+
     def render(self):
         if MULTITHREADED_RENDERING:
             # set caption

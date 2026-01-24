@@ -76,6 +76,7 @@ For shader support see [Shaders](#shaders)
 ### Using animations
 
 ## Keybinds & Keygroups
+Nebula doesn't use typical single-key keybinds, instead opting for _keygroups_. A keygroup is a group of one or more keys that all act as one _keybind_, which can be accessed through the [keybind service](/engine/scripts/core/keyHandler.py). Keygroups and their [keycodes🔗](https://www.pygame.org/docs/ref/key.html) have to be registered at game startup (or during runtime)
 
 ## File management
 For image/animation loading see [Sprites](#sprites) or [Animations](#animations)
