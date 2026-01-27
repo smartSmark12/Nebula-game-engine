@@ -125,6 +125,7 @@ class MainEngine:
         # key handler setup
         self.keyhandler = KeyHandler(self) # change keybinds in keyhandler.py
         self.keyhandler.initial_setup()
+        self.load_default_keybinds()
 
         # scene handler setup
         self.scene_handler = SceneHandler(self)
@@ -311,6 +312,11 @@ class MainEngine:
     def load_sounds(self):
         pass
 
+    def load_default_keybinds(self):
+        for keybind in DEFAULT_KEYBINDS:
+            for keycode in DEFAULT_KEYBINDS[keybind]:
+                self.register_keybind(keybind, keycode)
+
     def get_keybind_pressed(self, keybind:str):
         return self.keybinds_pressed[keybind]
     
@@ -400,13 +406,18 @@ class MainEngine:
 
     def do_logic(self): # all non-engine related logic should go here
         # only renders integrated examples
-        self.render_examples()
+        """ self.render_examples()
 
         self.animations["example_anim"].anim_pos = (self.mouse_info[0][0], self.mouse_info[0][1])
 
-        self.animations_to_render.append("example_anim")
+        self.animations_to_render.append("example_anim") """
+
+        if self.get_keybind_just_pressed("consoleToggle"):
+            print("console toggled!")
  
     def run(self):
+        self.scene_handler.getActiveScene().update = self.do_physics # makes it do shitall
+
         while self.is_running:
             self.handle_events()
             self.update()

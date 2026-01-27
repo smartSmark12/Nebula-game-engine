@@ -40,6 +40,7 @@ class KeyHandler:
 
         else:
             self.keybinds[keybind_name] = [keycode]
+            self.update_keybind_buffers()
 
     def unregister_keybind(self, keybind_name:str, keycode:int):
         if keybind_name in self.keybinds:

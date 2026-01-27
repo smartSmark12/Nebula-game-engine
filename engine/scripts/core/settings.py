@@ -24,6 +24,11 @@ DEFAULT_ANIMATION_PATH:str = "./engine/scripts/animations_to_create.py"
 # scene settings
 DEFAULT_SCENE_NAME = "main"         # the default rendered scene
 
+# keybind settings
+DEFAULT_KEYBINDS = {
+    "consoleToggle":[1073741882]
+}
+
 # server settings
 SERVER_CONNECTIONS:int = 4          # max connections the server will expect at start
 SERVER_DATA_SIZE:int = 1024*16      # max bytesize the client will send and accept
