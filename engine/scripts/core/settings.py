@@ -1,4 +1,4 @@
-NGF_VERSION = "0.0.4s"
+NGF_VERSION = "0.0.4c"
 GAME_NAME = "Placeholder_name"
 
 WIDTH = 1920
@@ -28,6 +28,9 @@ DEFAULT_SCENE_NAME = "main"         # the default rendered scene
 DEFAULT_KEYBINDS = {
     "consoleToggle":[1073741882]
 }
+
+# console settings
+CONSOLE_COMMAND_WORD = "/"
 
 # server settings
 SERVER_CONNECTIONS:int = 4          # max connections the server will expect at start

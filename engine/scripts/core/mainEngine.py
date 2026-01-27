@@ -42,6 +42,8 @@ from scripts.alarm import Alarm # local library for frame asynchronous periodica
 from scripts.core.reactions.reactionService import ReactionService # local library for Provider-Listener Reactions
 from scripts.core.reactions.reactionProvider import ReactionProvider
 from scripts.core.reactions.reactionListener import ReactionListener
+from scripts.core.console.console import ConsoleHandler
+from scripts.core.console.consoleCommand import ConsoleCommand
 from scripts.raycast.raycastHandler import Raycaster # local library for raycasted lighting
 
 """ from game.game import MainGame """
@@ -131,6 +133,14 @@ class MainEngine:
         self.scene_handler = SceneHandler(self)
         self.scene_handler.addScene(Scene(self, "main"))
 
+        # console service setup
+        self.console = ConsoleHandler(self)
+
+        version_command = ConsoleCommand("version", "engine version number")
+        version_command.execute = self.con_print_version_info
+
+        self.console.register_command(version_command)
+
         # reaction service setup
         self.reactionService = ReactionService(self)
 
@@ -174,6 +184,9 @@ class MainEngine:
 
     def return_to_runtime_logger(self, place):
         print(f"{place}: Returning to runtime log handler")
+
+    def con_print_version_info(self, app, args):
+        print(f"VERSION: {NGF_VERSION}")
 
     def create_examples(self):
 
