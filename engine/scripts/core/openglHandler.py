@@ -8,6 +8,9 @@ class OGLHandler:
     def __init__(self, appInstance):
         self.app = appInstance
 
+        self.vertex = None
+        self.fragment = None
+
     def OGL_init(self):
 
         # prepare modernGL prerequisities

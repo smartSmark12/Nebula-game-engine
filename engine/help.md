@@ -10,6 +10,16 @@ This is an **not** a full documentation yet, so expect mistakes and **missing** 
 - [Engine file structure](#engine-file-structure)
 - [Engine features \& services](#engine-features--services)
   - [Rendering](#rendering)
+    - [Drawing](#drawing)
+    - [RenderItem types](#renderitem-types)
+      - [sprite](#sprite)
+      - [rect](#rect)
+      - [line](#line)
+      - [aaline](#aaline)
+      - [circle](#circle)
+      - [text](#text)
+      - [poly](#poly)
+    - [RenderItem metadata](#renderitem-metadata)
   - [Sprites](#sprites)
     - [Loading sprites](#loading-sprites)
     - [Using sprites](#using-sprites)
@@ -67,6 +77,38 @@ The _game_ folder is meant as a root folder for all game-related [scripts](/engi
 ## Rendering
 For shader support see [Shaders](#shaders)
 
+Nebula uses a custom [rendering adapter](/engine/scripts/core/render.py) built on [RenderItems](/engine/scripts/renderItem.py), which you don't directly interact with (you can, but that's only recommended for compatibility or customization).  
+As of right now, the rendering adapter is firmly fixed to certain object types and certain rendering steps (allowing for a single-threaded/multi-threaded mode and some base screenspace [shader](#shaders) support), but that is all planned to be improved in later versions with a custom [OpenGL/ModernGL](https://moderngl.readthedocs.io/) renderer with unlocked customization.
+
+### Drawing
+To draw to the screen, use the *self.draw()* method of [mainEngine.py](/engine/scripts/core/mainEngine.py) with the specific [RenderItem type](#renderitem-types), the desired layer to draw onto (you can setup the total layer count in [settings.py](/engine/scripts/core/settings.py)) and the appropriate [metadata](#renderitem-metadata) as follows:  
+- **draw(** itemType:str, layer:int, metadata:dict **)** - note that this method doesn't immediately draw onto the screen, instead the item information is stored to be later asynchronously (when using multi-threaded rendering) drawn onto the screen.
+
+### RenderItem types
+The renderer currently supports a few basic render types:
+- sprite
+- rect
+- line
+- aaline
+- circle
+- text
+- poly
+  
+#### sprite
+Used to render bitmap textures  
+Metadata:
+- "sprite" - sprite/texture in the pg.Surface type. Sprites loaded using [sprites_to_load.json](/engine/scripts/json/sprites_to_load.json) are stored in **self.sprites** in [mainEngine.py](/engine/scripts/core/mainEngine.py)
+- "rect" - pg.Rect-like shape to where the sprite will be rendered on screen (use to_scale and its variants for resolution independent positioning)
+#### rect
+#### line
+#### aaline
+#### circle
+#### text
+#### poly
+
+### RenderItem metadata
+The current fixed renderer uses specific arguments for every type of RenderItem called RI *metadata*. They range from object color to polygon point information and consist of key:value pairs (dicts) and are specified [above](#renderitem-types).
+
 ## Sprites
 ### Loading sprites
 ### Using sprites
@@ -76,7 +118,12 @@ For shader support see [Shaders](#shaders)
 ### Using animations
 
 ## Keybinds & Keygroups
-Nebula doesn't use typical single-key keybinds, instead opting for _keygroups_. A keygroup is a group of one or more keys that all act as one _keybind_, which can be accessed through the [keybind service](/engine/scripts/core/keyHandler.py). Keygroups and their [keycodes🔗](https://www.pygame.org/docs/ref/key.html) have to be registered at game startup (or during runtime)
+Nebula doesn't use typical single-key keybinds, instead opting for _keygroups_. A keygroup is a group of one or more keys that all act as one _keybind_, which can be accessed through the [keybind service](/engine/scripts/core/keyHandler.py). Keygroups and their [keycodes🔗](https://www.pygame.org/docs/ref/key.html) have to be registered at game startup (or during runtime).
+
+Keybind management functions accessible through the kebind service (self.keyhandler in [mainEngine.py](/engine/scripts/core/mainEngine.py) - *only for special purposes*):
+- **get_keybind_pressed(** keybind:str **)** - returns a boolean depending on if the specified *registered* keygroup *keybind* is currently pressed / held (*note*: for detecting single-frame keygroup presses use *get_keybind_just_pressed()*)
+- **get_keybind_just_pressed(** keybind:str **)** - returns True for one frame whenever a specified *registered* keygroup *keybind* is pressed.
+- 
 
 ## File management
 For image/animation loading see [Sprites](#sprites) or [Animations](#animations)

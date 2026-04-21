@@ -14,7 +14,7 @@ SYNC_UPS_FPS:bool = 1               # should client synchronize UPS and FPS? (le
 RENDER_LAYERS:int = 10              # set how many layers your game uses; start from 0, empty layers usually don't impact performance much
 MULTITHREADED_RENDERING:bool = True # use a newer multithreaded rendering method - EXPERIMENTAL
 
-OGL_ENABLED:bool = 0                # opengl implementation for shader support (currently resource heavy)
+OGL_ENABLED:bool = 1                # opengl implementation for shader support (currently resource heavy)
 DEFAULT_SHADER_PATH:str = "./engine/shaders/default" # adds '.vert' & '.frag' automatically
 
 DEFAULT_SPRITE_PATH:str = "./engine/scripts/sprites_to_load.py"

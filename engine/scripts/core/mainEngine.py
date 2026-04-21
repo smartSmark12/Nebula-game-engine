@@ -130,6 +130,8 @@ class MainEngine:
         self.scene_handler = SceneHandler(self)
         self.scene_handler.addScene(Scene(self, "main"))
 
+        self.scene_handler.getActiveScene().update = self.load_sounds
+
         # reaction service setup
         self.reactionService = ReactionService(self)
 
