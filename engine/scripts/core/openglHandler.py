@@ -16,10 +16,10 @@ class OGLHandler:
         # prepare modernGL prerequisities
         self.ctx = mgl.create_context()
         self.quad_buffer = self.ctx.buffer(data=array("f", [
-            -1.0, 1.0, 0.0, 0.0,
-            1.0, 1.0, 1.0, 0.0,
-            -1.0, -1.0, 0.0, 1.0,
-            1.0, -1.0, 1.0, 1.0,
+            -1.0, 1.0, 0.0, 0.0, 0.0,
+            1.0, 1.0, 0.0, 1.0, 0.0,
+            -1.0, -1.0, 0.0, 0.0, 1.0,
+            1.0, -1.0, 0.0, 1.0, 1.0,
         ]))
 
         self.create_gl_program()
@@ -27,7 +27,7 @@ class OGLHandler:
     def create_gl_program(self):
         self.load_shaders()
         self.program = self.ctx.program(vertex_shader=self.vertex, fragment_shader=self.fragment)
-        self.render_object = self.ctx.vertex_array(self.program, [(self.quad_buffer, '2f 2f', 'vert', 'texcoord')])
+        self.render_object = self.ctx.vertex_array(self.program, [(self.quad_buffer, '3f 2f', 'vert', 'texcoord')])
 
     def surf_to_tex(self, surf):
         tex = self.ctx.texture(surf.get_size(), 4)
