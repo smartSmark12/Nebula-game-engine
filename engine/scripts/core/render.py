@@ -68,7 +68,7 @@ class ThreadedGameRenderer:
                     except:
                         self.current_log.append(f"{__name__}: Item '{item.item_type}' in layer {item.layer} couldn't be rendered; check metadata parameters")
 
-        if OGL_ENABLED:
+        if RENDERER_TYPE == 1:
             with self.lock:
                 self.app.window = self.window_drawing.copy()
 
@@ -129,7 +129,7 @@ class MainGameRender:
             except Exception as e:
                 self.current_log.append(f"{__name__}: Item '{item.item_type}' in layer {item.layer} couldn't be rendered; check metadata parameters; (full stack: {e})")
 
-        if OGL_ENABLED:
+        if RENDERER_TYPE == 1:
         
             self.app.ogl_handler.frame_tex = self.surf_to_tex(self.window)
             self.app.ogl_handler.frame_tex.use(0)
@@ -138,7 +138,7 @@ class MainGameRender:
         
         pg.display.flip()
 
-        if OGL_ENABLED:
+        if RENDERER_TYPE == 1:
 
             self.app.ogl_handler.frame_tex.release()
             
@@ -170,7 +170,7 @@ class MainGameRender:
                     except:
                         self.current_log.append(f"{__name__}: Item '{item.item_type}' in layer {item.layer} couldn't be rendered; check metadata parameters")
 
-        if OGL_ENABLED:
+        if RENDERER_TYPE == 1:
         
             self.app.ogl_handler.frame_tex = self.surf_to_tex(self.window)
             self.app.ogl_handler.frame_tex.use(0)
@@ -182,6 +182,6 @@ class MainGameRender:
         
         pg.display.flip()
 
-        if OGL_ENABLED:
+        if RENDERER_TYPE == 1:
 
             self.app.ogl_handler.frame_tex.release()

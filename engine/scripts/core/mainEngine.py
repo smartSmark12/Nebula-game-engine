@@ -43,6 +43,7 @@ from scripts.core.reactions.reactionService import ReactionService # local libra
 from scripts.core.reactions.reactionProvider import ReactionProvider
 from scripts.core.reactions.reactionListener import ReactionListener
 from scripts.raycast.raycastHandler import Raycaster # local library for raycasted lighting
+from scripts.renderer.renderer import NovaRenderer
 
 """ from game.game import MainGame """
 
@@ -75,26 +76,35 @@ class MainEngine:
         self.default_font = pg.font.SysFont("Arial", 50)
 
         # debug if opengl crashes
-        print("OpenGL/ModernGL: ", OGL_ENABLED)
+        print("OpenGL/ModernGL mode: ", RENDERER_TYPE)
 
         # creates pygame window
         ## need to redo this part
+
+        flags = 0
+
+        # set flags
         if IN_FULLSCREEN:
-            if OGL_ENABLED:
-                self.render_window = pg.display.set_mode(RESOLUTION, pg.FULLSCREEN | pg.OPENGL | pg.DOUBLEBUF)
-                self.window = pg.Surface(RESOLUTION)
-            else:
-                self.window = pg.display.set_mode(RESOLUTION, pg.FULLSCREEN)
+            flags = flags | pg.FULLSCREEN
+
+        if RENDERER_TYPE == 1 or RENDERER_TYPE == 2:
+            flags = flags | pg.OPENGL | pg.DOUBLEBUF
+
+
+        # create window
+        if RENDERER_TYPE == 1:
+            self.render_window = pg.display.set_mode(RESOLUTION, flags)
+            self.window = pg.Surface(RESOLUTION)
+
+        elif RENDERER_TYPE == 2:
+            self.window = pg.display.set_mode(RESOLUTION, flags)
+
         else:
-            if OGL_ENABLED:
-                self.render_window = pg.display.set_mode(RESOLUTION, pg.OPENGL | pg.DOUBLEBUF)
-                self.window = pg.Surface(RESOLUTION)
-            else:
-                self.window = pg.display.set_mode(RESOLUTION)
+            self.window = pg.display.set_mode(RESOLUTION, flags)
 
         # opengl setup
         self.ogl_handler = OGLHandler(self)
-        if OGL_ENABLED:
+        if RENDERER_TYPE == 1:
             self.ogl_handler.OGL_init()
 
         # rendering setup
@@ -117,10 +127,14 @@ class MainEngine:
 
         self.thread_lock = Lock() # shared lock for multithreading
 
-        if MULTITHREADED_RENDERING:
-            self.renderer = ThreadedGameRenderer(self, self.thread_lock)
-        else:
-            self.renderer = MainGameRender(self)
+        if RENDERER_TYPE == 0 or RENDERER_TYPE == 1:
+            if MULTITHREADED_RENDERING:
+                self.renderer = ThreadedGameRenderer(self, self.thread_lock)
+            else:
+                self.renderer = MainGameRender(self)
+
+        elif RENDERER_TYPE == 2:
+            self.renderer = NovaRenderer(self, self.thread_lock)
 
         # key handler setup
         self.keyhandler = KeyHandler(self) # change keybinds in keyhandler.py
@@ -149,10 +163,15 @@ class MainEngine:
         self.reactionService.add_provider("frameUpdate", ReactionProvider())
         self.reactionService.add_provider("sceneChange", ReactionProvider())
 
+        self.scene_handler.getActiveScene().update = self.load_sounds ## TEMP TODO: REMOVE
+
         #self.reactionService.get_provider("frameUpdate").add_listener(ReactionListener(partial(print, "frame updated!"))) ## move to documentation examples
 
         # your game code here
         pass
+
+    def gl_normalize_screen_coords(self, coords:tuple[float|int, float|int]) -> tuple[float|int, float|int]:
+        return ((coords[0] / WIDTH) * 2 - 1, ((coords[1] / HEIGHT) * 2 - 1) * -1)
 
     def create_runtime_logger(self):
         self.logger = LogHandler()
@@ -341,7 +360,9 @@ class MainEngine:
                 self.to_render_full = self.to_render.copy()
 
             # render last updated window with opengl
-            if OGL_ENABLED: # such a stupid implementation >:(
+            if RENDERER_TYPE == 1: # such a stupid implementation >:(
+                #pass # why are we doing this twice?
+
                 with self.thread_lock:
                     self.ogl_handler.frame_tex = self.ogl_handler.surf_to_tex(self.window)
                 self.ogl_handler.frame_tex.use(0)
@@ -351,9 +372,6 @@ class MainEngine:
                 pg.display.flip()
 
                 self.ogl_handler.frame_tex.release()
-
-
-
 
         else:
             pg.display.set_caption(f"{self.name}: ({int(self.clock.get_fps())} FPS)")
@@ -400,11 +418,16 @@ class MainEngine:
 
     def do_logic(self): # all non-engine related logic should go here
         # only renders integrated examples
-        self.render_examples()
+        #self.render_examples()
 
-        self.animations["example_anim"].anim_pos = (self.mouse_info[0][0], self.mouse_info[0][1])
+        #self.animations["example_anim"].anim_pos = (self.mouse_info[0][0], self.mouse_info[0][1])
 
-        self.animations_to_render.append("example_anim")
+        #self.animations_to_render.append("example_anim")
+
+        self.draw("rect", 1, {"rect":pg.Rect(20, 40, 400, 200), "color":blue})
+        #self.draw("rect", 1, {"rect":pg.Rect(800, 100, 100, 100), "color":yellow})
+
+        pass
  
     def run(self):
         while self.is_running:

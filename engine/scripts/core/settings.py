@@ -1,4 +1,4 @@
-NGF_VERSION = "0.0.4s"
+NGF_VERSION = "0.0.5r"
 GAME_NAME = "Placeholder_name"
 
 WIDTH = 1920
@@ -8,14 +8,14 @@ RESOLUTION = (WIDTH, HEIGHT)
 IN_FULLSCREEN = False
 
 # rendering options
-FPS_LOGIC_LIMIT:int = 400#120           # limits UPS ## TBA
+FPS_LOGIC_LIMIT:int = 0#400#120           # limits UPS ## TBA
 FPS_RENDER_LIMIT:int = 0            # limits rendered FPS
-SYNC_UPS_FPS:bool = 1               # should client synchronize UPS and FPS? (leads to better UPS-FPS ratio) - EXPERIMENTAL!!
+SYNC_UPS_FPS:bool = 0#1               # should client synchronize UPS and FPS? (leads to better UPS-FPS ratio) - EXPERIMENTAL!!
 RENDER_LAYERS:int = 10              # set how many layers your game uses; start from 0, empty layers usually don't impact performance much
-MULTITHREADED_RENDERING:bool = True # use a newer multithreaded rendering method - EXPERIMENTAL
+MULTITHREADED_RENDERING:bool = False # use a newer multithreaded rendering method - EXPERIMENTAL
 
-OGL_ENABLED:bool = 0                # opengl implementation for shader support (currently resource heavy)
-DEFAULT_SHADER_PATH:str = "./engine/shaders/default" # adds '.vert' & '.frag' automatically
+RENDERER_TYPE = 2                   # 0 - pygame rendering | 1 - pygame rendering + opengl implementation for shader support (currently resource heavy) | 2 - Nebula Render Service "Nova" (fully custom ModernGL renderer)
+DEFAULT_SHADER_PATH:str = "./engine/shaders/default" # only for pygame + OpenGL ! adds '.vert' & '.frag' automatically
 
 DEFAULT_SPRITE_PATH:str = "./engine/scripts/sprites_to_load.py"
 DEFAULT_SPRITE_JSON_PATH:str = "./engine/scripts/json/sprites_to_load.json"
