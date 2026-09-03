@@ -1,3 +1,7 @@
+<!-- hello from Val :3 -->
+
+*Documentation Nebula engine target version:* **v0.0.5r**
+
 ## NOTICE
 This is an **not** a full documentation yet, so expect mistakes and **missing** or frequently **changing** paragraphs
 
@@ -6,20 +10,23 @@ This is an **not** a full documentation yet, so expect mistakes and **missing** 
 - [Engine code structure](#engine-code-structure)
   - [Imports](#imports)
   - [Built-in functions](#built-in-functions)
+  - [Engine configuration](#engine-configuration)
   - [Custom classes](#custom-classes)
 - [Engine file structure](#engine-file-structure)
 - [Engine features \& services](#engine-features--services)
   - [Rendering](#rendering)
     - [Drawing](#drawing)
+    - [RenderItem metadata](#renderitem-metadata)
     - [RenderItem types](#renderitem-types)
       - [sprite](#sprite)
       - [rect](#rect)
       - [line](#line)
       - [aaline](#aaline)
       - [circle](#circle)
+      - [smooth\_circle](#smooth_circle)
       - [text](#text)
       - [poly](#poly)
-    - [RenderItem metadata](#renderitem-metadata)
+    - [Renderer types](#renderer-types)
   - [Sprites](#sprites)
     - [Loading sprites](#loading-sprites)
     - [Using sprites](#using-sprites)
@@ -64,6 +71,36 @@ Specific service functions ([alarms](#alarms), [render](#rendering), [keybinds](
 - **runGame()** - the engine entry point - do not write any code here
 - **load_sounds()** - as Nebula doesn't currently have a unified sound management service, this is where you should load your music and sound effects (_note_: the function is **not called by default** - ideally call it in game_on_init())
 
+## Engine configuration
+There are currently two main config files; [one](/engine/scripts/core/settings.py) for the Nebula engine itself and [one](/engine/scripts/renderer/nova_config.py) for the Nebula Render Service Nova.  
+The [engine settings file](/engine/scripts/core/settings.py) contains multiple sections:
+- **engine information** -
+  - *NGF_VERSION* - internal engine version used for debugging or version compatibility checking, meaning you **should not change it**
+  - *GAME_NAME* - name which will be used within the window header and/or which you can use in your game
+- **display settings** - currently used as the default game resolution whenever you don't use an internal resolution / fullscreen override
+- **rendering options**
+  - *FPS_LOGIC_LIMIT* - maximum/target logic (CPU) FPS when multithreading is used or general maximum/target FPS otherwise.
+  - *FPS_RENDER_LIMIT* - maximum/target GPU FPS when multithreading is used, otherwise it's ignored and the *FPS_LOGIC_LIMIT* is used instead
+  - *SYNC_UPS_FPS* - whether the engine should limit rendered (GPU) FPS to the current logic (CPU) FPS (*note*: *current* meaning the frame-by-frame live FPS, not the *FPS_LOGIC_LIMIT*, e.g. if the game is running at 39 CPU FPS, the rendered (GPU) FPS will be also limited to 39)
+  - *RENDER_LAYERS* - total number of layers which will be used for rendering. There is only a negligible performance decrease when using a large number of render layers
+  - *MULTITHREADED_RENDERING* - whether to run the render worker on a separate thread. There is no real benefit to using multithreaded rendering, as the current python version is still locked using the [GIL](https://en.wikipedia.org/wiki/Global_interpreter_lock) and because the [default renderer](#renderer-types) is the only one currently capable of running multithreaded
+  - *RENDERER_TYPE* - which renderer to use; 0 - default, 1 - screenspace shader, 2 - NRS Nova
+  - *DEFAULT_SPRITE_PATH* - *legacy*; default file path from which the older sprite loader will load sprite information
+  - *DEFAULT_SPRITE_JSON_PATH* - default file path from which the sprite loader will load sprite information
+  - *DEFAULT_ANIMATION_PATH* - default file path from which the animation loader will load animation information
+- **scene settings**
+  - *DEFAULT_SCENE_NAME* - name of the default processed scene. Can be changed here, but a better way is to change it programmatically using engine commands
+- **server settings**  
+    (*note*: the current server architecture is extremely impractical and mostly exists as a proof of concept. More information available [here](#multiplayer))
+  - *SERVER_CONNECTIONS* - maximum number of connections the server will be listening for
+  - *SERVER_DATA_SIZE* - maximum bytesize the server and client will be able to send/receive. Any packets larger than that will be truncated and most likely corrupted
+  - *SERVER_UPS* - target logic (CPU) FPS for the server to run at
+  - *SERVER_DELTA* - minimum time delay between packets sent by the server in seconds
+  - *SERVER_TIMEOUT* - maximum time of no response from a client in seconds, after which the client is disconnected from the server
+- **server debug settings**
+  - *SERVER_LOCAL_SERVER* - will connect to a *localhost* server address instead of an external one when True
+  - *SERVER_IP* - IP address of an external server to which the client will attempt to connect unless overridden
+
 ## Custom classes
 As written in the [file structure](#engine-file-structure), all game-related files should be placed in the [game scripts folder](/engine/game/scripts/) (read about importing [here](#imports)). Note there isn't any specific file naming convention
 
@@ -84,13 +121,17 @@ As of right now, the rendering adapter is firmly fixed to certain object types a
 To draw to the screen, use the *self.draw()* method of [mainEngine.py](/engine/scripts/core/mainEngine.py) with the specific [RenderItem type](#renderitem-types), the desired layer to draw onto (you can setup the total layer count in [settings.py](/engine/scripts/core/settings.py)) and the appropriate [metadata](#renderitem-metadata) as follows:  
 - **draw(** itemType:str, layer:int, metadata:dict **)** - note that this method doesn't immediately draw onto the screen, instead the item information is stored to be later asynchronously (when using multi-threaded rendering) drawn onto the screen.
 
+### RenderItem metadata
+The current fixed renderer uses specific arguments for every [type of RenderItem](#renderitem-types) called RI *metadata*. They range from object color to polygon point information and consist of key:value pairs (dicts) and are specified [below](#renderitem-types).
+
 ### RenderItem types
-The renderer currently supports a few basic render types:
+The renderer(s) currently support(s) a few basic render types:
 - sprite
 - rect
 - line
 - aaline
 - circle
+- smooth_circle (*NRS Nova only*)
 - text
 - poly
   
@@ -98,16 +139,65 @@ The renderer currently supports a few basic render types:
 Used to render bitmap textures  
 Metadata:
 - "sprite" - sprite/texture in the pg.Surface type. Sprites loaded using [sprites_to_load.json](/engine/scripts/json/sprites_to_load.json) are stored in **self.sprites** in [mainEngine.py](/engine/scripts/core/mainEngine.py)
-- "rect" - pg.Rect-like shape to where the sprite will be rendered on screen (use to_scale and its variants for resolution independent positioning)
+- "rect" - [pg.Rect](https://www.pygame.org/docs/ref/rect.html)-like shape to where the sprite will be rendered on screen (use to_scale and its variants for resolution independent positioning)
 #### rect
+Used to render rectangular shapes. The *width* and *radius* parameters can be used to render the shape only as a continuous edge and/or set the corner radius respectively  
+Metadata:
+- "rect" - [pg.Rect](https://www.pygame.org/docs/ref/rect.html)-like shape which the drawn rectangle will follow
+- "color" - <red, green, blue> formatted tuple of color for the rectangle to be drawn with (*note*: some predefined colors are available in [colors.py](/engine/scripts/colors.py))
+- "width" - edge width in pixels:int. If the edge width isn't provided or is 0, the shape will be filled
+- "radius" - corner radius in pixels:int
 #### line
+Used to draw lines of set width specified by starting and ending points  
+Metadata:
+- "color" - <red, green, blue> formatted tuple of color for the line to be drawn with (*note*: some predefined colors are available in [colors.py](/engine/scripts/colors.py))
+- "start" - <pixel, pixel> starting coordinate
+- "end" - <pixel, pixel> ending coordinate
+- "width" - width of the line in pixels:int
 #### aaline
+Used to draw single-pixel wide antialiased lines specified by starting and ending points  
+Metadata:
+- "color" - <red, green, blue> formatted tuple of color for the antialiased line to be drawn with (*note*: some predefined colors are available in [colors.py](/engine/scripts/colors.py))
+- "start" - <pixel, pixel> starting coordinate
+- "end" - <pixel, pixel> starting coordinate
+- *note*: the antialiased line doesn't accept any width parameter, because it is exactly 1 pixel wide
 #### circle
+Used to draw filled or circumference-only circles  
+Metadata:
+- "color" - <red, green, blue> formatted tuple of color for the circle to be drawn with (*note*: some predefined colors are available in [colors.py](/engine/scripts/colors.py))
+- "center" - <pixel, pixel> center coordinate
+- "radius" - circle radius in pixels:int
+- "width" - edge width in pixels:int. If the edge width isn't provided or is 0, the shape will be filled
+#### smooth_circle
+*(Only available when using NRS Nova)*  
+Used to draw antialiased filled or circumference-only circles  
+Metadata:
+- "color" - <red, green, blue> formatted tuple of color for the circle to be drawn with (*note*: some predefined colors are available in [colors.py](/engine/scripts/colors.py))
+- "center" - <pixel, pixel> center coordinate
+- "radius" - circle radius in pixels:int
+- "width" - edge width in pixels:int. If the edge width isn't provided or is 0, the shape will be filled
 #### text
+Used to draw texts using specified fonts. When no font is specified, an Arial font of size 30p will be used to render the text  
+Metadata:
+- "font" - [pg.font.Font](https://www.pygame.org/docs/ref/font.html#pygame.font.Font)-like
+- "text" - plain text to be rendered : str
+- "antialias" - <True | False> whether to antialas the text : bool
+- "color" - <red, green, blue> formatted tuple of color for the text to be drawn with. When no color is specified, the text background will be drawn black (*note*: some predefined colors are available in [colors.py](/engine/scripts/colors.py))
+- "bgcolor" - <red, green, blue> formatted tuple of color for the text background to be drawn with. A transparent background is used instead if the *no_bg* parameter is set to *True*
+- "no_bg" - <True | False> when set to *True*, the text is rendered on a transparent background, else the background is black when no *bg_color* is specified
+- "rect" - [pg.Rect](https://www.pygame.org/docs/ref/rect.html)-like shape which the text will be drawn onto (*note*: only the *x*, *y* coordinate is important, the *width* and *height* can be left as 0, 0 and the text will still be drawn)
 #### poly
+Used to draw polygons  
+Metadata:
+- "color" - <red, green, blue> formatted tuple of color for the polygon to be drawn with (*note*: some predefined colors are available in [colors.py](/engine/scripts/colors.py))
+- "points" - list of <pixel, pixel> coordinates, the space among which will be drawn. The last point will get connected back to the first one automatically
+- "width" - edge width in pixels:int. If the edge width isn't provided or is 0, the shape will be filled
 
-### RenderItem metadata
-The current fixed renderer uses specific arguments for every type of RenderItem called RI *metadata*. They range from object color to polygon point information and consist of key:value pairs (dicts) and are specified [above](#renderitem-types).
+### Renderer types
+Nebula currently supports three mostly compatible/interchangeable renderers (*note*: you can select which renderer to use in the [settings](/engine/scripts/core/settings.py) file. More information available [here](#engine-configuration)).
+- The **default** (*legacy*) and the most compatible renderer uses the RenderItem->pygame pipeline
+- The **second** (*experimental/legacy*) renderer is useful when you need to have a single shader cover the entire screen (e.g. bloom postprocessing). Unless you absolutely need to **don't use this renderer**, as it runs at a significantly reduced FPS than the default renderer and may experience some incompatibility with mobile/older devices. Under the hood it uses the default renderer to draw all RenderItems to an offscreen framebuffer, which is then used as a shader texture input
+- The **third** (*experimental/in development*) renderer is the [*Nebula Render Service Nova*](/engine/scripts/renderer/renderer.py), which is a custom [OpenGL/ModernGL](https://moderngl.readthedocs.io/) based system with significantly increased performance and more features in comparison to the default pipeline. It also supports custom RenderObjects with full vertex/fragment shader customization.
 
 ## Sprites
 ### Loading sprites

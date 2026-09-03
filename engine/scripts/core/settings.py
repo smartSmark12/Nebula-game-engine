@@ -1,6 +1,8 @@
+# engine information
 NGF_VERSION = "0.0.4s"
 GAME_NAME = "Placeholder_name"
 
+# display settings
 WIDTH = 1920
 HEIGHT = 1080
 
