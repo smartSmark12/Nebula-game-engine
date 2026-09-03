@@ -1,5 +1,9 @@
 # Nova Renderer (Nebula render service) Config
 
+# renderer information
+NOVA_TARGET_VERSION = "0.0.5r"
+NOVA_VERSION = "0.0.1"
+
 # render batching config # HAS TO BE CHANGED IN THE RELEVANT SHADER TOO
 NOVA_SOLID_RECT_BATCH_SIZE = 64
 NOVA_TEXTURED_RECT_BATCH_SIZE = 32

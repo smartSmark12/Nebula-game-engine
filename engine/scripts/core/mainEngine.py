@@ -1,5 +1,5 @@
-# Nebula Game Framework prototype v0.0.4c (19. 1. 2026) [cython support with py 3.13t - freethreaded]
-# NGFp designed by VaclavK - not for commercial use - only experiments and silly stuff >:)
+# Nebula Game Framework v0.0.5r (3. 9. 2026) [NRS Nova integration]
+# NGF designed by VaclavK - not for commercial use - only experiments and silly stuff >:)
 
 ## DO NOT USE mainEngine.py AS AN ENTRY POINT
 ## LOCATE THE EXECUTABLE IN THE TOP PARENT DIRECTORY
@@ -43,7 +43,7 @@ from scripts.core.reactions.reactionService import ReactionService # local libra
 from scripts.core.reactions.reactionProvider import ReactionProvider
 from scripts.core.reactions.reactionListener import ReactionListener
 from scripts.raycast.raycastHandler import Raycaster # local library for raycasted lighting
-from scripts.renderer.renderer import NovaRenderer
+from scripts.renderer.renderer import NovaRenderer # more performant render library
 
 """ from game.game import MainGame """
 

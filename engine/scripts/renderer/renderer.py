@@ -1,3 +1,6 @@
+# Nebula Render Service Nova v0.0.1
+# configs provided by nova_config.py
+
 from array import array
 import pygame as pg
 import moderngl as mgl
@@ -15,6 +18,10 @@ from scripts.renderer.renderObjects.untexturedColorRect import UntexturedColorRe
 
 class NovaRenderer:
     def __init__(self, app, thread_lock:Lock):
+
+        # initialization debug info
+        print(f"\n{__name__}: NRS Nova v{NOVA_VERSION} for Nebula v{NGF_VERSION}")
+
         self.app = app
 
         self.lock = thread_lock
@@ -27,11 +34,10 @@ class NovaRenderer:
 
         # prepare modernGL prerequisities
         self.ctx = mgl.create_context()
-
         self.ctx.disable(mgl.CULL_FACE) # not needed for 2D either way
 
-        self.shaders = {}
-        self.vaos = {}
+        # version debug info
+        print(f"using ModernGL via OpenGL (version {self.ctx.info["GL_VERSION"]})")
 
         # cpu-gpu memory init
         self.create_render_objects()
@@ -40,14 +46,26 @@ class NovaRenderer:
         #_thread.start_new_thread(self.render_thread)
 
 
-    # BUFFERS
+    # RENDER OBJECTS
     def create_render_objects(self):
         # likely need a single-item texture rendering buffer, cause i don't know shis about 2D GPU rendering
         # but i can still have multiple untextured items rendered at once, cause GPU VMEM packing
 
         self.render_objects = {}
 
-        self.render_objects["rect"] = UntexturedColorRectRenderObject(self.app, self.ctx)
+        self.register_render_object("rect", UntexturedColorRectRenderObject)
+
+    def register_render_object(self, objectType:str, renderObjectClass):
+
+        if self.render_objects.get(objectType) == None:
+            try:
+                self.render_objects[objectType] = renderObjectClass(self.app, self.ctx)
+
+            except Exception as e:
+                print(f"{__name__}: render object couldn't be registered ({e})")
+
+        else:
+            print(f"{__name__}: render object for '{objectType}' couldn't be registered; another render object had already been registered for this render item type")
 
 
     ## SHADERS
