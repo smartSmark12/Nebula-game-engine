@@ -1,6 +1,6 @@
 #version 330 core
 
-uniform vec4 cols[32]; /* rgba */
+uniform vec4 cols[64]; /* rgba */
 
 flat in uint id; /* from vert shader */
 

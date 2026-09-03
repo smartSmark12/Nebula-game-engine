@@ -424,8 +424,9 @@ class MainEngine:
 
         #self.animations_to_render.append("example_anim")
 
-        self.draw("rect", 1, {"rect":pg.Rect(20, 40, 400, 200), "color":blue})
-        #self.draw("rect", 1, {"rect":pg.Rect(800, 100, 100, 100), "color":yellow})
+        for i in range(512):
+            self.draw("rect", 1, {"rect":pg.Rect(20, 40, 400, 200), "color":blue})
+            self.draw("rect", 1, {"rect":pg.Rect(800, 100, 100, 100), "color":yellow})
 
         pass
  

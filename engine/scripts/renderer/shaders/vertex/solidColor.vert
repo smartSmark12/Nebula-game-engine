@@ -6,6 +6,6 @@ in vec3 in_vert;
 flat out uint id;
 
 void main() {
-    id = uint(gl_VertexID / 4); /* to get the id of the object from vertex id to be used for uniform color access */
+    id = uint(gl_VertexID / 6); /* to get the id of the object from vertex id to be used for uniform color access */
     gl_Position = vec4(in_vert, 1.0); /* x, y, d, h */
 }

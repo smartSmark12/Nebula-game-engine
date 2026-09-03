@@ -2,15 +2,16 @@ import numpy as np
 import moderngl as mgl
 
 class NovaRenderObject:
-    def __init__(self, app, ctx:mgl.Context, vertexShaderPath:str, fragmentShaderPath:str, dataType:np.dtype, bufferVertexSize:int, bufferAmount:int):
+    def __init__(self, app, ctx:mgl.Context, vertexShaderPath:str, fragmentShaderPath:str, dataType:np.dtype, bufferVertexSize:int, bufferVertsPerItem:int, bufferAmount:int):
         self.app = app
         self.ctx = ctx
 
         self.dataType = dataType
         self.bufferVertexSize = bufferVertexSize
+        self.bufferVertsPerItem = bufferVertsPerItem
         self.bufferAmount = bufferAmount
 
-        self.create_buffers(dataType=dataType, bufferVertexSize=bufferVertexSize, bufferAmount=bufferAmount)
+        self.create_buffers(dataType=dataType, bufferVertexSize=bufferVertexSize, bufferVertsPerItem=bufferVertsPerItem, bufferAmount=bufferAmount)
 
         self._vs = vertexShaderPath
         self._fs = fragmentShaderPath
@@ -25,13 +26,16 @@ class NovaRenderObject:
             buffers
         )
 
-    def create_buffers(self, dataType:np.dtype, bufferVertexSize:int, bufferAmount:int):
+    def create_buffers(self, dataType:np.dtype, bufferVertexSize:int, bufferVertsPerItem:int, bufferAmount:int):
+        reserve_bytes = np.dtype(dataType).itemsize * bufferAmount * bufferVertsPerItem * bufferVertexSize
+        reserve_type = np.dtype(dataType)
+
         self.array = None
-        self.buffer = self.ctx.buffer(reserve=np.dtype(dataType).itemsize * bufferAmount * bufferVertexSize)
+        self.buffer = self.ctx.buffer(reserve=reserve_bytes)
 
         print(f"\ncreated VMEM buffer:")
-        print(f"reserved VMEM: {np.dtype(dataType).itemsize * bufferAmount * bufferVertexSize} B")
-        print(f"buffer type: {np.dtype(dataType)}")
+        print(f"reserved VMEM: {reserve_bytes} B ({reserve_bytes / 1024} kB)")
+        print(f"buffer type: {reserve_type}")
         print(f"vertexDataSize: {bufferVertexSize}")
 
     def _create_vao(self, vertexShader:str, fragmentShader:str, buffers:list) -> mgl.VertexArray:
@@ -57,7 +61,7 @@ class NovaRenderObject:
 
         self.vao = render_object
 
-        print(f"created VAO: {self.vao}")
+        print("\ncreated VAO")
 
     def load_shader(self, shaderPath:str) -> str:
         shader = None
@@ -75,5 +79,7 @@ class NovaRenderObject:
 
     def render(self):
         self.pre_render()
-        #print("rendered!")
-        self.vao.render(mode=mgl.TRIANGLE_STRIP, vertices=4)
+
+        buffer_vertices = self.array.size // self.bufferVertexSize
+
+        self.vao.render(mode=mgl.TRIANGLES, vertices=buffer_vertices)

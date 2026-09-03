@@ -7,7 +7,7 @@ from scripts.renderer.renderObjects.renderObject import NovaRenderObject
 
 class UntexturedColorRectRenderObject(NovaRenderObject):
     def __init__(self, app, ctx): #nt.uColorRect
-        super().__init__(app, ctx, "engine/scripts/renderer/shaders/vertex/solidColor.vert", "engine/scripts/renderer/shaders/fragment/solidColor.frag", np.float32, 3, NOVA_SOLID_RECT_BATCH_SIZE)
+        super().__init__(app, ctx, "engine/scripts/renderer/shaders/vertex/solidColor.vert", "engine/scripts/renderer/shaders/fragment/solidColor.frag", np.float32, 3, 6, NOVA_SOLID_RECT_BATCH_SIZE)
 
         self.create_vao([(self.buffer, "3f", "in_vert")])
 
@@ -25,10 +25,17 @@ class UntexturedColorRectRenderObject(NovaRenderObject):
             bl = self.app.gl_normalize_screen_coords((item.metadata["rect"].left, item.metadata["rect"].bottom))
             br = self.app.gl_normalize_screen_coords((item.metadata["rect"].right, item.metadata["rect"].bottom))
 
+            # quad building
+            
+            # tri 1
             points.extend([tl[0], tl[1], 0.0])
             points.extend([tr[0], tr[1], 0.0])
             points.extend([bl[0], bl[1], 0.0])
+
+            # tri 2
+            points.extend([tr[0], tr[1], 0.0])
             points.extend([br[0], br[1], 0.0])
+            points.extend([bl[0], bl[1], 0.0])
 
             # prepare colors for uniform
             colors.append(

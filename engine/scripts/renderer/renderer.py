@@ -30,8 +30,6 @@ class NovaRenderer:
 
         self.ctx.disable(mgl.CULL_FACE) # not needed for 2D either way
 
-        #self.ctx.screen
-
         self.shaders = {}
         self.vaos = {}
 
@@ -86,12 +84,86 @@ class NovaRenderer:
 
             self.render(self.to_render)
 
+    def split_render_data(self, to_render:list) -> dict[dict]:
+
+        layer_data = {}
+
+        # formatted as
+        # layer_data = {
+        #   0: {
+        #       "rect": [<item>, <item>, <item>, ...],
+        #       "sprite": [<item>, ...],
+        #       ...
+        #   },
+        #   ...
+        # }
+
+        # split by render data
+        for layer in range(self.app.render_layers):
+            layer_data[layer] = {}
+
+        for item in to_render:
+            if layer_data[item.layer].get(item.item_type) == None:
+                layer_data[item.layer][item.item_type] = []
+
+            layer_data[item.layer][item.item_type].append(item)
+
+        return layer_data
+
+
+
+        # 84
+
+
     def render(self, to_render):
-        local_to_render = sorted(to_render.copy(), key=lambda item: item.item_type)
 
-        self.ctx.clear(0.0, 0.22, 0.3, 1.0)
+        # split render data
+        layer_data = self.split_render_data(to_render)
 
-        for layer in range(self.layers): # goes through every layer; set number of layers at the top in "engine default variables - layers_current"
+        # clear fbo
+        self.ctx.clear(0.0, 0.0, 0.0, 1.0)
+
+        for layer, layer_items in layer_data.items():
+            for item_type, items in layer_items.items():
+                match item_type:
+                    case "sprite":
+                        continue
+
+                    case "rect":
+                        i = 0
+                        while len(items) > NOVA_SOLID_RECT_BATCH_SIZE * i:
+                            self.render_objects["rect"].add_to_render(items[NOVA_SOLID_RECT_BATCH_SIZE * i: NOVA_SOLID_RECT_BATCH_SIZE * i + NOVA_SOLID_RECT_BATCH_SIZE])
+                            self.render_objects["rect"].render()
+
+                            i += 1
+
+                    case "line":
+                        continue
+
+                    case "aaline":
+                        continue
+
+                    case "circle":
+                        continue
+
+                    case "smooth_circle":
+                        continue
+
+                    case "text":
+                        continue
+
+                    case "poly":
+                        continue
+
+                    case _:
+                        self.current_log.append(
+                            f"{__name__}: item type {item_type} is not recognized by NRS; check item parameters"
+                        )
+
+        with self.lock:
+            pg.display.flip()
+
+        """ for layer in range(self.layers): # goes through every layer; set number of layers at the top in "engine default variables - layers_current"
             for item in local_to_render: # sprite, rect, line, aaline, circle, text
                 if item.layer == layer: # checks if current item is at the set layer, else skips it
                     #try:
@@ -124,7 +196,7 @@ class NovaRenderer:
                     #    self.current_log.append(f"{__name__}: Item '{item.item_type}' in layer {item.layer} couldn't be rendered; check metadata parameters")
 
         with self.lock:
-            pg.display.flip()
+            pg.display.flip() """
     
     def render_get_log(self):
         with self.lock:
