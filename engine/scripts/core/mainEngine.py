@@ -424,9 +424,16 @@ class MainEngine:
 
         #self.animations_to_render.append("example_anim")
 
-        for i in range(512):
-            self.draw("rect", 1, {"rect":pg.Rect(20, 40, 400, 200), "color":blue})
+        for i in range(1):
+            self.draw("rect", 3, {"rect":pg.Rect(20, 40, 400, 200), "color":blue})
+            self.draw("rect", 1, {"rect":pg.Rect(40, 60, 400, 200), "color":magenta})
             self.draw("rect", 1, {"rect":pg.Rect(800, 100, 100, 100), "color":yellow})
+
+        self.draw("rect", 2, {"rect":pg.Rect(self.mouse_info[0][0], self.mouse_info[0][1], 400, 200), "color":cyan})
+
+        self.draw("circle", 1, {"center":(400, 400), "color":red, "radius":100, "width":5})
+        
+        self.draw("smooth_circle", 1, {"center":(600, 400), "color":red, "radius":100, "width":10})
 
         pass
  

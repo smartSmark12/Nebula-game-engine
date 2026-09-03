@@ -15,6 +15,8 @@ import _thread
 from threading import Lock
 
 from scripts.renderer.renderObjects.untexturedColorRect import UntexturedColorRectRenderObject
+from scripts.renderer.renderObjects.colorCircle import ColorCircleRenderObject
+from scripts.renderer.renderObjects.smoothColorCircle import SmoothColorCircleRenderObject
 
 class NovaRenderer:
     def __init__(self, app, thread_lock:Lock):
@@ -35,6 +37,7 @@ class NovaRenderer:
         # prepare modernGL prerequisities
         self.ctx = mgl.create_context()
         self.ctx.disable(mgl.CULL_FACE) # not needed for 2D either way
+        self.ctx.enable(mgl.BLEND) # enables alpha
 
         # version debug info
         print(f"using ModernGL via OpenGL (version {self.ctx.info["GL_VERSION"]})")
@@ -54,6 +57,8 @@ class NovaRenderer:
         self.render_objects = {}
 
         self.register_render_object("rect", UntexturedColorRectRenderObject)
+        self.register_render_object("circle", ColorCircleRenderObject)
+        self.register_render_object("smooth_circle", SmoothColorCircleRenderObject)
 
     def register_render_object(self, objectType:str, renderObjectClass):
 
@@ -162,10 +167,20 @@ class NovaRenderer:
                         continue
 
                     case "circle":
-                        continue
+                        i = 0
+                        while len(items) > NOVA_SOLID_CIRCLE_BATCH_SIZE * i:
+                            self.render_objects["circle"].add_to_render(items[NOVA_SOLID_CIRCLE_BATCH_SIZE * i: NOVA_SOLID_CIRCLE_BATCH_SIZE * i + NOVA_SOLID_CIRCLE_BATCH_SIZE])
+                            self.render_objects["circle"].render()
+
+                            i += 1
 
                     case "smooth_circle":
-                        continue
+                        i = 0
+                        while len(items) > NOVA_SOLID_CIRCLE_BATCH_SIZE * i:
+                            self.render_objects["smooth_circle"].add_to_render(items[NOVA_SOLID_CIRCLE_BATCH_SIZE * i: NOVA_SOLID_CIRCLE_BATCH_SIZE * i + NOVA_SOLID_CIRCLE_BATCH_SIZE])
+                            self.render_objects["smooth_circle"].render()
+
+                            i += 1
 
                     case "text":
                         continue

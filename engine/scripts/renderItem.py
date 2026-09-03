@@ -45,6 +45,11 @@ class RenderItem:
                 if "center" not in self.metadata: self.metadata["center"] = (100, 100)
                 if "radius" not in self.metadata: self.metadata["radius"] = 50
                 if "width" not in self.metadata: self.metadata["width"] = 0
+            case "smooth_circle": # only available with NRS Nova
+                if "color" not in self.metadata: self.metadata["color"] = white
+                if "center" not in self.metadata: self.metadata["center"] = (100, 100)
+                if "radius" not in self.metadata: self.metadata["radius"] = 50
+                if "width" not in self.metadata: self.metadata["width"] = 0
             case "line":
                 if "color" not in self.metadata: self.metadata["color"] = white
                 if "start" not in self.metadata: self.metadata["start"] = (0, 0)

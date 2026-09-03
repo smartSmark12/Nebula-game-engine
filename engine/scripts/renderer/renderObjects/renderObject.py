@@ -33,7 +33,7 @@ class NovaRenderObject:
         self.array = None
         self.buffer = self.ctx.buffer(reserve=reserve_bytes)
 
-        print(f"\ncreated VMEM buffer:")
+        print(f"\n{__name__}: \ncreated VMEM buffer:")
         print(f"reserved VMEM: {reserve_bytes} B ({reserve_bytes / 1024} kB)")
         print(f"buffer type: {reserve_type}")
         print(f"vertexDataSize: {bufferVertexSize}")

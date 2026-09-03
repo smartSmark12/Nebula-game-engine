@@ -15,15 +15,19 @@ class UntexturedColorRectRenderObject(NovaRenderObject):
 
         # get data from items
         points = []
+
         colors = []
 
         for item in items:
 
             # calculate vertex pos
-            tl = self.app.gl_normalize_screen_coords((item.metadata["rect"].left, item.metadata["rect"].top))
-            tr = self.app.gl_normalize_screen_coords((item.metadata["rect"].right, item.metadata["rect"].top))
-            bl = self.app.gl_normalize_screen_coords((item.metadata["rect"].left, item.metadata["rect"].bottom))
-            br = self.app.gl_normalize_screen_coords((item.metadata["rect"].right, item.metadata["rect"].bottom))
+            rect = item.metadata["rect"]
+            color = item.metadata["color"]
+
+            tl = self.app.gl_normalize_screen_coords((rect.left, rect.top))
+            tr = self.app.gl_normalize_screen_coords((rect.right, rect.top))
+            bl = self.app.gl_normalize_screen_coords((rect.left, rect.bottom))
+            br = self.app.gl_normalize_screen_coords((rect.right, rect.bottom))
 
             # quad building
             
@@ -39,7 +43,7 @@ class UntexturedColorRectRenderObject(NovaRenderObject):
 
             # prepare colors for uniform
             colors.append(
-                (item.metadata["color"][0] / 255, item.metadata["color"][1] / 255, item.metadata["color"][2] / 255, 1.0) # essentially a vec4 of rgb + a=1
+                (color[0] / 255, color[1] / 255, color[2] / 255, 1.0) # essentially a vec4 of rgb + a=1
             )
 
         # uniform padding
