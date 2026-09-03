@@ -28,6 +28,8 @@ class NovaRenderer:
         # prepare modernGL prerequisities
         self.ctx = mgl.create_context()
 
+        self.ctx.disable(mgl.CULL_FACE) # not needed for 2D either way
+
         #self.ctx.screen
 
         self.shaders = {}

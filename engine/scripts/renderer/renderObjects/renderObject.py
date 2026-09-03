@@ -2,14 +2,15 @@ import numpy as np
 import moderngl as mgl
 
 class NovaRenderObject:
-    def __init__(self, app, ctx:mgl.Context, vertexShaderPath:str, fragmentShaderPath:str, dataType:np.dtype, bufferAmount:int):
+    def __init__(self, app, ctx:mgl.Context, vertexShaderPath:str, fragmentShaderPath:str, dataType:np.dtype, bufferVertexSize:int, bufferAmount:int):
         self.app = app
         self.ctx = ctx
 
         self.dataType = dataType
+        self.bufferVertexSize = bufferVertexSize
         self.bufferAmount = bufferAmount
 
-        self.create_buffers(dataType=dataType, bufferAmount=bufferAmount)
+        self.create_buffers(dataType=dataType, bufferVertexSize=bufferVertexSize, bufferAmount=bufferAmount)
 
         self._vs = vertexShaderPath
         self._fs = fragmentShaderPath
@@ -24,9 +25,14 @@ class NovaRenderObject:
             buffers
         )
 
-    def create_buffers(self, dataType:np.dtype, bufferAmount:int):
+    def create_buffers(self, dataType:np.dtype, bufferVertexSize:int, bufferAmount:int):
         self.array = None
-        self.buffer = self.ctx.buffer(reserve=np.dtype(dataType).itemsize * bufferAmount)
+        self.buffer = self.ctx.buffer(reserve=np.dtype(dataType).itemsize * bufferAmount * bufferVertexSize)
+
+        print(f"\ncreated VMEM buffer:")
+        print(f"reserved VMEM: {np.dtype(dataType).itemsize * bufferAmount * bufferVertexSize} B")
+        print(f"buffer type: {np.dtype(dataType)}")
+        print(f"vertexDataSize: {bufferVertexSize}")
 
     def _create_vao(self, vertexShader:str, fragmentShader:str, buffers:list) -> mgl.VertexArray:
     
@@ -51,6 +57,8 @@ class NovaRenderObject:
 
         self.vao = render_object
 
+        print(f"created VAO: {self.vao}")
+
     def load_shader(self, shaderPath:str) -> str:
         shader = None
 
@@ -68,4 +76,4 @@ class NovaRenderObject:
     def render(self):
         self.pre_render()
         #print("rendered!")
-        self.vao.render(mode=mgl.TRIANGLE_STRIP)
+        self.vao.render(mode=mgl.TRIANGLE_STRIP, vertices=4)

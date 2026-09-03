@@ -6,8 +6,8 @@ from scripts.renderer.dataTypes import NovaType as nt
 from scripts.renderer.renderObjects.renderObject import NovaRenderObject
 
 class UntexturedColorRectRenderObject(NovaRenderObject):
-    def __init__(self, app, ctx):
-        super().__init__(app, ctx, "engine/scripts/renderer/shaders/vertex/solidColor.vert", "engine/scripts/renderer/shaders/fragment/solidColor.frag", nt.uColorRect, NOVA_SOLID_RECT_BATCH_SIZE)
+    def __init__(self, app, ctx): #nt.uColorRect
+        super().__init__(app, ctx, "engine/scripts/renderer/shaders/vertex/solidColor.vert", "engine/scripts/renderer/shaders/fragment/solidColor.frag", np.float32, 3, NOVA_SOLID_RECT_BATCH_SIZE)
 
         self.create_vao([(self.buffer, "3f", "in_vert")])
 
@@ -41,6 +41,8 @@ class UntexturedColorRectRenderObject(NovaRenderObject):
 
         # send vertex array to vmem
         self.array = np.array(points, dtype=self.dataType)
+
+        self.buffer.clear()
         self.buffer.write(self.array)
         
         #print(self.buffer.read())
