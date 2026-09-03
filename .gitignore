@@ -1,6 +1,8 @@
 /tests/
 /engine/scripts/tests/
 /build/
+/build_configs/
+/Nebula/
 .vscode/*
 .vs/*
 **/__pycache__/**

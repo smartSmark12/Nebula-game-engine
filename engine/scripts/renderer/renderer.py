@@ -40,7 +40,7 @@ class NovaRenderer:
         self.ctx.enable(mgl.BLEND) # enables alpha
 
         # version debug info
-        print(f"using ModernGL via OpenGL (version {self.ctx.info["GL_VERSION"]})")
+        print(f"using ModernGL via OpenGL (version {self.ctx.info['GL_VERSION']})")
 
         # cpu-gpu memory init
         self.create_render_objects()

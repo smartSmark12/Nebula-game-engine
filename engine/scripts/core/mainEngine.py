@@ -16,6 +16,7 @@ from array import array
 from threading import Lock
 import _thread
 from functools import partial
+from time import time # for time measurement
 from scripts.core.render import MainGameRender, ThreadedGameRenderer # local renderer library
 from scripts.renderItem import RenderItem # local class library serving as the base for every object rendering to the screen
 from scripts.functions import * # local universal functions library
@@ -147,6 +148,9 @@ class MainEngine:
         # reaction service setup
         self.reactionService = ReactionService(self)
 
+        self.reactionService.add_provider("frameUpdate", ReactionProvider())
+        self.reactionService.add_provider("sceneChange", ReactionProvider())
+
         # raycaster setup
         self.raycaster = Raycaster(self)
 
@@ -158,14 +162,18 @@ class MainEngine:
         ## mouse last pressed status?? Why here?
         self.mouse_last = 0
 
+        # debug metrics
+        self.ngf_debug_metrics = {}
+
+        self.ngf_debug_metrics["frame"] = 0
+        self.ngf_debug_metrics["start_time"] = time() * 1000 # to get milliseconds
+        self.ngf_debug_metrics["time"] = 0
+
+        self.reactionService.get_provider("frameUpdate").add_listener(ReactionListener(self.update_debug_metrics))
+
     # write your game on_init here
     def game_on_init(self):
-        self.reactionService.add_provider("frameUpdate", ReactionProvider())
-        self.reactionService.add_provider("sceneChange", ReactionProvider())
-
         self.scene_handler.getActiveScene().update = self.load_sounds ## TEMP TODO: REMOVE
-
-        #self.reactionService.get_provider("frameUpdate").add_listener(ReactionListener(partial(print, "frame updated!"))) ## move to documentation examples
 
         # your game code here
         pass
@@ -348,6 +356,10 @@ class MainEngine:
     def unregister_keybind(self, keybind_name:str, keycode:int):
         self.keyhandler.unregister_keybind(keybind_name, keycode)
 
+    def update_debug_metrics(self):
+        self.ngf_debug_metrics["frame"] += 1
+        self.ngf_debug_metrics["time"] = (time() * 1000) - self.ngf_debug_metrics["start_time"]
+
     def render(self):
         if MULTITHREADED_RENDERING:
             # set caption
@@ -361,7 +373,7 @@ class MainEngine:
 
             # render last updated window with opengl
             if RENDERER_TYPE == 1: # such a stupid implementation >:(
-                #pass # why are we doing this twice?
+                #pass # why are we doing this twice? ## why the heck not tho
 
                 with self.thread_lock:
                     self.ogl_handler.frame_tex = self.ogl_handler.surf_to_tex(self.window)
@@ -431,7 +443,7 @@ class MainEngine:
 
         self.draw("rect", 2, {"rect":pg.Rect(self.mouse_info[0][0], self.mouse_info[0][1], 400, 200), "color":cyan})
 
-        self.draw("circle", 1, {"center":(400, 400), "color":red, "radius":100, "width":5})
+        self.draw("circle", 1, {"center":(400 + math.cos(self.ngf_debug_metrics["time"] / 1000) * 100, 400 + math.sin(self.ngf_debug_metrics["time"] / 200) * 50), "color":red, "radius":100, "width":5})
         
         self.draw("smooth_circle", 1, {"center":(600, 400), "color":red, "radius":100, "width":10})
 
