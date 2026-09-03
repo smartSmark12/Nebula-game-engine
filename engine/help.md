@@ -101,6 +101,16 @@ The [engine settings file](/engine/scripts/core/settings.py) contains multiple s
   - *SERVER_LOCAL_SERVER* - will connect to a *localhost* server address instead of an external one when True
   - *SERVER_IP* - IP address of an external server to which the client will attempt to connect unless overridden
 
+The [NRS Nova config file](/engine/scripts/renderer/nova_config.py) options:
+- **renderer information**
+  - *NOVA_TARGET_VERSION* - Nebula version the current NRS Nova version is built for / tested to work with. **Should not be changed**
+  - *NOVA_VERSION* - internal NRS Nova version. **Should not be changed**
+- **render batching config**  
+    **Disclaimer:** when changing any of these values, make sure to also change the relevant buffer/uniform sizes in the relevant shaders, otherwise the shaders will fail to compile/won't work in general 
+  - *NOVA_SOLID_RECT_BATCH_SIZE* - batch size for untextured (colored) rectangles
+  - *NOVA_SOLID_CIRCLE_BATCH_SIZE* - batch size for circles (both normal and smooth_circles)
+  - *NOVA_TEXTURED_RECT_BATCH_SIZE* - batch size for textured rectangles
+
 ## Custom classes
 As written in the [file structure](#engine-file-structure), all game-related files should be placed in the [game scripts folder](/engine/game/scripts/) (read about importing [here](#imports)). Note there isn't any specific file naming convention
 
