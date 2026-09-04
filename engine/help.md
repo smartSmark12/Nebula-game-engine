@@ -25,6 +25,7 @@ This is an **not** a full documentation yet, so expect mistakes and **missing** 
       - [circle](#circle)
       - [smooth\_circle](#smooth_circle)
       - [text](#text)
+      - [triangle](#triangle)
       - [poly](#poly)
     - [Renderer types](#renderer-types)
   - [Sprites](#sprites)
@@ -143,6 +144,7 @@ The renderer(s) currently support(s) a few basic render types:
 - circle
 - smooth_circle (*NRS Nova only*)
 - text
+- triangle (*NRS Nova only*)
 - poly
   
 #### sprite
@@ -196,6 +198,12 @@ Metadata:
 - "bgcolor" - <red, green, blue> formatted tuple of color for the text background to be drawn with. A transparent background is used instead if the *no_bg* parameter is set to *True*
 - "no_bg" - <True | False> when set to *True*, the text is rendered on a transparent background, else the background is black when no *bg_color* is specified
 - "rect" - [pg.Rect](https://www.pygame.org/docs/ref/rect.html)-like shape which the text will be drawn onto (*note*: only the *x*, *y* coordinate is important, the *width* and *height* can be left as 0, 0 and the text will still be drawn)
+#### triangle
+*(Only available when using NRS Nova)*  
+Used to draw triangles (*marginally cheaper than rendering triangles with poly*)  
+Metadata:
+- "points" - list of <pixel, pixel> coordinates that will make up the triangle
+- "color" - <red, green, blue> formatted tuple of color for the polygon to be drawn with (*note*: some predefined colors are available in [colors.py](/engine/scripts/colors.py))
 #### poly
 Used to draw polygons  
 Metadata:
