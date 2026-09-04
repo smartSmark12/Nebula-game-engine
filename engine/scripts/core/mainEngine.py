@@ -450,6 +450,9 @@ class MainEngine:
         
         self.draw("smooth_circle", 1, {"center":(600, 400), "color":red, "radius":100, "width":10})
 
+        self.draw("triangle", 2, {"points":[(1000, 100), (1300, 120), (1030, 300)], "color":green})
+        self.draw("triangle", 2, {"points":[(1000, 350), (1300, 380), (1030, 480)], "color":lime})
+
         pass
  
     def run(self):

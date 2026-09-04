@@ -17,6 +17,7 @@ from threading import Lock
 from scripts.renderer.renderObjects.untexturedColorRect import UntexturedColorRectRenderObject
 from scripts.renderer.renderObjects.colorCircle import ColorCircleRenderObject
 from scripts.renderer.renderObjects.smoothColorCircle import SmoothColorCircleRenderObject
+from scripts.renderer.renderObjects.colorTriangle import ColorTriangleRenderObject
 
 class NovaRenderer:
     def __init__(self, app, thread_lock:Lock):
@@ -59,6 +60,7 @@ class NovaRenderer:
         self.register_render_object("rect", UntexturedColorRectRenderObject)
         self.register_render_object("circle", ColorCircleRenderObject)
         self.register_render_object("smooth_circle", SmoothColorCircleRenderObject)
+        self.register_render_object("triangle", ColorTriangleRenderObject)
 
     def register_render_object(self, objectType:str, renderObjectClass):
 
@@ -170,6 +172,9 @@ class NovaRenderer:
 
                         case "text":
                             continue
+
+                        case "triangle":
+                            self.render_objects["triangle"].render(items)
 
                         case "poly":
                             continue
