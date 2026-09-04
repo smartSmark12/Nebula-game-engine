@@ -82,6 +82,9 @@ class ThreadedGameRenderer:
             self.current_log.clear()
         return send_log
 
+    def register_render_object(self, objectType:str, renderObjectClass):
+        print(f"{__name__}: warning: this renderer does not support custom render types; use NRS Nova instead")
+
 class MainGameRender:
     def __init__(self, app):
         self.app = app
@@ -185,3 +188,7 @@ class MainGameRender:
         if RENDERER_TYPE == 1:
 
             self.app.ogl_handler.frame_tex.release()
+
+
+    def register_render_object(self, objectType:str, renderObjectClass):
+        print(f"{__name__}: warning: this renderer does not support custom render types; use NRS Nova instead")

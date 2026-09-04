@@ -73,6 +73,9 @@ class MainEngine:
         self.clock = pg.time.Clock()
         self.dt = 0
 
+        # engine initialization info
+        print(f"starting init for {self.name}")
+
         # load default font
         self.default_font = pg.font.SysFont("Arial", 50)
 

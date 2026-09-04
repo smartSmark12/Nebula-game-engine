@@ -148,50 +148,49 @@ class NovaRenderer:
 
         for layer, layer_items in layer_data.items():
             for item_type, items in layer_items.items():
-                match item_type:
-                    case "sprite":
-                        continue
+                try:
+                    match item_type:
+                        case "sprite":
+                            continue
 
-                    case "rect":
-                        i = 0
-                        while len(items) > NOVA_SOLID_RECT_BATCH_SIZE * i:
-                            self.render_objects["rect"].add_to_render(items[NOVA_SOLID_RECT_BATCH_SIZE * i: NOVA_SOLID_RECT_BATCH_SIZE * i + NOVA_SOLID_RECT_BATCH_SIZE])
-                            self.render_objects["rect"].render()
+                        case "rect":
+                            self.render_objects["rect"].render(items)
 
-                            i += 1
+                        case "line":
+                            continue
 
-                    case "line":
-                        continue
+                        case "aaline":
+                            continue
 
-                    case "aaline":
-                        continue
+                        case "circle":
+                            self.render_objects["circle"].render(items)
 
-                    case "circle":
-                        i = 0
-                        while len(items) > NOVA_SOLID_CIRCLE_BATCH_SIZE * i:
-                            self.render_objects["circle"].add_to_render(items[NOVA_SOLID_CIRCLE_BATCH_SIZE * i: NOVA_SOLID_CIRCLE_BATCH_SIZE * i + NOVA_SOLID_CIRCLE_BATCH_SIZE])
-                            self.render_objects["circle"].render()
+                        case "smooth_circle":
+                            self.render_objects["smooth_circle"].render(items)
 
-                            i += 1
+                        case "text":
+                            continue
 
-                    case "smooth_circle":
-                        i = 0
-                        while len(items) > NOVA_SOLID_CIRCLE_BATCH_SIZE * i:
-                            self.render_objects["smooth_circle"].add_to_render(items[NOVA_SOLID_CIRCLE_BATCH_SIZE * i: NOVA_SOLID_CIRCLE_BATCH_SIZE * i + NOVA_SOLID_CIRCLE_BATCH_SIZE])
-                            self.render_objects["smooth_circle"].render()
+                        case "poly":
+                            continue
 
-                            i += 1
+                        case _:
+                            if item_type in self.render_objects.keys():
+                                try:
+                                    self.render_objects[item_type].render(items)
+                                except Exception as e:
+                                    self.current_log.append(
+                                        f"{__name__}: couldn't render item of type {item_type}; check item parameters ({e})"
+                                    )
+                            else:
+                                self.current_log.append(
+                                    f"{__name__}: item type {item_type} is not recognized by NRS; check item parameters"
+                                )
 
-                    case "text":
-                        continue
-
-                    case "poly":
-                        continue
-
-                    case _:
-                        self.current_log.append(
-                            f"{__name__}: item type {item_type} is not recognized by NRS; check item parameters"
-                        )
+                except Exception as e:
+                    self.current_log.append(
+                        f"{__name__}: failed to render item of type {item_type}; check metadata parameters ({e})"
+                    )
 
         with self.lock:
             pg.display.flip()

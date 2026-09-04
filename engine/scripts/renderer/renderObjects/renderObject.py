@@ -1,6 +1,8 @@
 import numpy as np
 import moderngl as mgl
 
+from scripts.renderItem import RenderItem
+
 class NovaRenderObject:
     def __init__(self, app, ctx:mgl.Context, vertexShaderPath:str, fragmentShaderPath:str, dataType:np.dtype, bufferVertexSize:int, bufferVertsPerItem:int, bufferAmount:int):
         self.app = app
@@ -71,13 +73,18 @@ class NovaRenderObject:
 
         return shader
 
+    def render(self, items:list[RenderItem]):
+        self.add_to_render(items)
+        self._render()
+
+
     def add_to_render(self):
         pass # use to add vertex data, uniforms etc
 
     def pre_render(self):
         pass # use to setup uniforms etc
 
-    def render(self):
+    def _render(self):
         self.pre_render()
 
         buffer_vertices = self.array.size // self.bufferVertexSize

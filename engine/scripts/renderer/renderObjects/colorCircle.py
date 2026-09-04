@@ -13,6 +13,14 @@ class ColorCircleRenderObject(NovaRenderObject):
 
         self.create_vao([(self.buffer, "3f", "in_vert")])
 
+    def render(self, items):
+        i = 0
+        while len(items) > NOVA_SOLID_CIRCLE_BATCH_SIZE * i:
+            self.add_to_render(items[NOVA_SOLID_CIRCLE_BATCH_SIZE * i: NOVA_SOLID_CIRCLE_BATCH_SIZE * i + NOVA_SOLID_CIRCLE_BATCH_SIZE])
+            self._render()
+
+            i += 1
+
     def add_to_render(self, items:list):
 
         # get data from items
