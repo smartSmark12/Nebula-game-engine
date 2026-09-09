@@ -3,7 +3,8 @@
 /build/
 /build_configs/
 /Nebula/
-.vscode/*
+/.nebula-fedora/
+.vscode/
 .vs/*
 **/__pycache__/**
 

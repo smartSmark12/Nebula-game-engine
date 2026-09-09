@@ -1,6 +1,15 @@
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 
+# warning:
+# Windows needs .pyd files, Linux needs .so files !
+# .pyx files are universal between both OSs
+#
+# command:
+# py -3.13t engine/scripts/cython/setup.py build_ext --inplace
+#
+# this rudimentary system will get improved when the engine-wide auto-compilation comes up
+
 # this is the file name you have to change to your own
 NAME = "raycaster"
 
@@ -21,5 +30,3 @@ ext_modules = [
 setup(
     ext_modules=cythonize(ext_modules)
 )
-
-# py -3.13t engine/scripts/cython/setup.py build_ext --inplace
